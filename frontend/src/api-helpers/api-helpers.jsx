@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "https://findyour.onrender.com";
+const BASE_URL = "https://moviebackend-ude7.onrender.com";
 
 // Get all movies
 export const getAllMovies = async () => {
@@ -21,10 +21,6 @@ export const sendUserAuthRequest = async (data, signup) => {
       password: data.password,
     });
 
-    if (res.status !== 200 && res.status !== 201) {
-      console.log("Unexpected Error Occurred");
-    }
-
     const resData = res.data;
 
     if (resData?.user?._id) {
@@ -36,7 +32,7 @@ export const sendUserAuthRequest = async (data, signup) => {
 
     return resData;
   } catch (err) {
-    console.log(err);
+    console.log("Auth Error:", err.response?.data || err.message);
   }
 };
 
@@ -48,13 +44,9 @@ export const sendAdminAuthRequest = async (data) => {
       password: data.password,
     });
 
-    if (res.status !== 200) {
-      return console.log("Unexpected Error");
-    }
-
     return res.data;
   } catch (err) {
-    console.log(err);
+    console.log("Admin Auth Error:", err.response?.data || err.message);
   }
 };
 
@@ -62,10 +54,6 @@ export const sendAdminAuthRequest = async (data) => {
 export const getMovieDetails = async (id) => {
   try {
     const res = await axios.get(`${BASE_URL}/movie/${id}`);
-    if (res.status !== 200) {
-      throw new Error("Unexpected response status");
-    }
-
     const movieData = res.data;
 
     if (movieData?.movie?.title) {
@@ -94,7 +82,6 @@ export const bookSeats = async (movieid, data) => {
 // Generate invoice
 export const generateInvoice = async (bookingId, userId, movieName, seats, totalAmount, qrCode) => {
   try {
-    console.log(`Fetching invoice for booking ID: ${bookingId}`);
     const response = await axios.post(`${BASE_URL}/api/invoices/generate/${bookingId}`, {
       userId,
       movieName,
@@ -115,7 +102,7 @@ export const getInvoiceById = async (invoiceId) => {
     const response = await axios.get(`${BASE_URL}/api/invoices/${invoiceId}`);
     return response.data.invoice;
   } catch (error) {
-    console.error("Error fetching invoice:", error);
+    console.error("Error fetching invoice:", error.response?.data || error.message);
     return null;
   }
 };
